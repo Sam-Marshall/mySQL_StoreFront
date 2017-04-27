@@ -1,16 +1,15 @@
 var config = require('./config.js');
 var mysql = require('mysql');
 var inquirer = require('inquirer');
+require('console.table');
 
 var connection = mysql.createConnection(config);
-
-require('console.table');
 
 connection.connect(function(error) {
     if (error) throw error;
 });
 
-function customerMainMenu() {
+var customerMainMenu = function () {
     connection.query('SELECT * FROM products', function(error, response) {
 
         if (error) throw error;
@@ -81,10 +80,9 @@ function checkQuantity(item, inquiry) {
 }
 
 function exitOrdering() {
+	console.log('Thanks for visiting! Have a lovely day.');
     connection.end();
 }
 
 
-customerMainMenu();
-
-// connection.end();
+module.exports = customerMainMenu;
