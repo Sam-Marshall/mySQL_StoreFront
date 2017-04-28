@@ -24,7 +24,6 @@ var mainMenu = function() {
 
     }]).then(function(answers) {
         var logInChoice = answers.bamazonOption;
-        // console.log(logInChoice);
         if (logInChoice === 'Customer Menu') {
             customerMainMenu();
         } else {
