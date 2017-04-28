@@ -4,12 +4,27 @@ var inquirer = require('inquirer');
 require('console.table');
 
 var connection = mysql.createConnection(config);
+var itemsInStockArray = [];
 
 connection.connect(function(error) {
     if (error) throw error;
 });
 
-var customerMainMenu = function () {
+connection.query('SELECT * FROM products', function(error, response) {
+
+    if (error) throw error;
+
+    for (var i = 0; i < response.length; i++) {
+        itemsInStockArray.push(response[i]);
+
+    }
+
+});
+
+var customerMainMenu = function() {
+
+    console.log('\n');
+
     connection.query('SELECT * FROM products', function(error, response) {
 
         if (error) throw error;
@@ -17,11 +32,27 @@ var customerMainMenu = function () {
         console.table(response);
 
         inquirer.prompt([{
+            type: 'input',
             name: 'idPurchase',
-            message: 'Welcome to Bamazon! Please enter the ID of the product you would like to buy: '
+            message: 'Welcome to Bamazon! Please enter the ID of the product you would like to buy: ',
+            validate: function validateIDInput(name) {
+                if (Number.isInteger(parseFloat(name)) && parseFloat(name) <= itemsInStockArray.length && parseFloat(name) > 0) {
+                    return true
+                } else {
+                    return false;
+                }
+            }
         }, {
+            type: 'input',
             name: 'units',
-            message: 'How many would you like to buy?'
+            message: 'How many would you like to buy?',
+            validate: function validateIDInput(name) {
+                if (Number.isInteger(parseFloat(name)) && parseFloat(name) > 0) {
+                    return true
+                } else {
+                    return false;
+                }
+            }
         }]).then(function(answers) {
             var itemToBuy = answers.idPurchase;
             var itemQuantity = answers.units;
@@ -43,7 +74,7 @@ function checkQuantity(item, inquiry) {
 
         if (inquiry > itemStock) {
 
-            console.log('Insufficient quantity!');
+            console.log('\nInsufficient quantity!');
             customerMainMenu();
 
         } else {
@@ -80,7 +111,7 @@ function checkQuantity(item, inquiry) {
 }
 
 function exitOrdering() {
-	console.log('Thanks for visiting! Have a lovely day.');
+    console.log('Thanks for visiting! Have a lovely day.');
     connection.end();
 }
 
